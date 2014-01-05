@@ -30,7 +30,7 @@ var findElement = {}; Cu.import('resource://mozmill/driver/mozelement.js', findE
 var os = {};          Cu.import('resource://mozmill/stdlib/os.js', os);
 var utils = {};       Cu.import('resource://mozmill/stdlib/utils.js', utils);
 var windows = {};     Cu.import('resource://mozmill/modules/windows.js', windows);
-
+var frame = {};     Cu.import('resource://mozmill/modules/frame.js', frame);
 
 const DEBUG = false;
 
@@ -129,7 +129,7 @@ function getApplicationDetails() {
     startupinfo: getStartupInfo()
   };
 
-  return JSON.stringify(details);
+  frame.events.fireEvent("getAppInformation", JSON.stringify(details));
 }
 
 // get startup time if available

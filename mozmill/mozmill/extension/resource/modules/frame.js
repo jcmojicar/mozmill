@@ -312,6 +312,10 @@ events.skip = function (reason) {
   events.fireEvent('skip', reason);
 }
 
+events.getAppInformation = function (appDetails) {
+  events.fireEvent('getAppInformation', appDetails);
+}
+
 events.fireEvent = function (name, obj) {
   if (events.appQuit) {
     // dump('* Event discarded: ' + name + ' ' + JSON.stringify(obj) + '\n');
@@ -397,6 +401,7 @@ broker.addObject({'endTest': events.endTest,
                   'persist': events.persist,
                   'screenshot': events.screenshot,
                   'shutdown': events.startShutdown,
+                  'getAppInformation': events.getAppInformation,
                  });
 
 try {

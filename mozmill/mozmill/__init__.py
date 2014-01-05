@@ -220,6 +220,8 @@ class MozMill(object):
                           eventType='mozmill.setTest')
         self.add_listener(self.shutdown_listener,
                           eventType='mozmill.shutdown')
+        self.add_listener(self.getAppInfo_listener,
+                          eventType='mozmill.getAppInformation')
 
     def add_listener(self, callback, eventType):
         self.listener_dict.setdefault(eventType, []).append(callback)
@@ -258,6 +260,13 @@ class MozMill(object):
 
     def screenshot_listener(self, obj):
         self.results.screenshots.append(obj)
+
+    def getAppInfo_listener(self, obj):
+
+        app_info = json.loads(obj)
+        app_info.update(self.runner.get_repositoryInfo())
+
+        self.results.appinfo = app_info
 
     def fire_event(self, event, obj):
         """Fire an event from the python side."""
@@ -323,7 +332,7 @@ class MozMill(object):
 
         # fetch the application info
         if not self.results.appinfo:
-            self.results.appinfo = self.get_appinfo()
+            self.get_appinfo()
 
         try:
             frame = jsbridge.JSObject(self.bridge, js_module_frame)
@@ -441,15 +450,12 @@ class MozMill(object):
 
         try:
             mozmill = jsbridge.JSObject(self.bridge, js_module_mozmill)
-            app_info = json.loads(mozmill.getApplicationDetails())
-            app_info.update(self.runner.get_repositoryInfo())
+            mozmill.getApplicationDetails()
 
         except JSBridgeDisconnectError:
             # We don't have to call report_disconnect here because
             # start_runner() will handle this exception
             pass
-
-        return app_info
 
     ### methods for shutting down and cleanup
 
