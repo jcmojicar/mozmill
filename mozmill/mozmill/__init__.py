@@ -220,6 +220,8 @@ class MozMill(object):
                           eventType='mozmill.setTest')
         self.add_listener(self.shutdown_listener,
                           eventType='mozmill.shutdown')
+        self.add_listener(self.logProgress_listener,
+                          eventType='mozmill.logProgress')
 
     def add_listener(self, callback, eventType):
         self.listener_dict.setdefault(eventType, []).append(callback)
@@ -272,6 +274,11 @@ class MozMill(object):
         # event listeners
         for callback in self.listener_dict.get(event, []):
             callback(obj)
+   
+    def logProgress_listener(self, obj):
+        """
+            Log Progress Event Listener
+        """
 
     ### methods for startup
 
@@ -381,6 +388,8 @@ class MozMill(object):
 
             # run tests
             tests = list(tests)
+            total_tests = len(tests)
+            curr_test_indx = 1
             while tests:
                 test = tests.pop(0)
                 self.running_test = test
@@ -402,6 +411,10 @@ class MozMill(object):
                     }
                     self.fire_event('endTest', obj)
                     continue
+                
+                for handler in self.handlers:
+                    if hasattr(handler, 'logProgress'):
+                        handler.logProgress(curr_test_indx, total_tests)
 
                 try:
                     frame = self.run_test_file(frame or self.start_runner(),
@@ -419,6 +432,7 @@ class MozMill(object):
                     frame = None
                     self.handle_disconnect()
 
+                curr_test_indx = curr_test_indx + 1
             # stop the runner
             if frame:
                 self.stop_runner()

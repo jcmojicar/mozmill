@@ -212,7 +212,8 @@ class LoggerListener(object):
     def events(self):
         return {'mozmill.setTest': self.startTest,
                 'mozmill.endTest': self.endTest,
-                'mozmill.endModule': self.endModule}
+                'mozmill.endModule': self.endModule,
+                'mozmill.logProgress': self.logProgress}
 
     def stop(self, results, fatal):
         """Print pass/failed/skipped statistics."""
@@ -259,6 +260,8 @@ class LoggerListener(object):
         self.logger.log(self.custom_levels["TEST-END"],
                         "%s | finished in %dms" % (filename, duration))
 
+    def logProgress(self, curr_test, totaltests):
+        self.logger.info('Running Test %d of %d' % (curr_test, totaltests))
 
 class ColorFormatter(logging.Formatter):
     # http://stackoverflow.com/questions/384076/
